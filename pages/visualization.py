@@ -10,7 +10,7 @@ import plotly.figure_factory as ff
 st.sidebar.markdown("# Visualization")
 tab1, tab2, tab3 = st.tabs(["Overview", "Visualizations", "I/O"])
 with tab1:
-    st.markdown("Here is our data:")
+    
     df=pd.read_csv('pages/DS_DA_BS.csv')
     #Clean salary column: we only want yearly salaries
     for ind in df.index:
@@ -39,10 +39,11 @@ with tab1:
     def state_extract(x):
         return x.split(',')[-1]
     df['states']=df['Location'].apply(state_extract)
+    with st.expander("Click here to view the data"):
+        st.markdown("Here is our data:")
+        st.dataframe(data=df[['Job Title','role','states','Sector','Company Name','mean salary']],width=None, height=None)
 
-    st.dataframe(data=df[['Job Title','role','states','Sector','Company Name','mean salary']],width=None, height=None)
-
-    st.markdown("DS,DA,BA Salaries Comparison")
+    st.markdown("**DS,DA,BA Salaries Comparison**")
     DS_salaries=list(df[df['role']=='DS']['mean salary'])
     DA_salaries=list(df[df['role']=='DA']['mean salary'])
     BA_salaries=list(df[df['role']=='BA']['mean salary'])
@@ -50,7 +51,14 @@ with tab1:
     fig=ff.create_distplot(
             hist_data, ['DS','DA','BA'])
     st.plotly_chart(fig, use_container_width=True)
-    st.dataframe(df.groupby(['role'])['mean salary'].aggregate(['count','mean','std','median']).sort_values(by='mean',ascending=False))
+    col1, col2=st.columns(2)
+    with col1:
+        st.dataframe(df.groupby(['role'])['mean salary'].aggregate(['count','mean','std','median']).sort_values(by='mean',ascending=False))
+        st.caption('The table above shows the job count for DS, BA, and DA. In addition, mean, std, and median of salaries are displayed in the table.')
+    with col2:
+        st.markdown('''
+* A **Data Scientist** specializes in high-level data manipulation, including writing complex algorithms and computer programming. **Business Analysts** are more focused on creating and interpreting reports on how the business is operating day to day, and providing recommendations based on their findings.
+* Data analysts and business analysts both help drive data-driven decision-making in their organizations. Data analysts tend to work more closely with the data itself, while business analysts tend to be more involved in addressing business needs and recommending solutions.''')
     # sns.distplot(df[df['role']=='DS']['mean salary'],label="DS")
     # sns.distplot(df[df['role']=='DA']['mean salary'],label="DA")
     # sns.distplot(df[df['role']=='BA']['mean salary'],label="BA")
@@ -83,8 +91,7 @@ with tab2:
 
     
 with tab3:
-    col1, col2= st.columns(2)
-    with col1:
+    with st.expander("Click to see jobs by states"):
         options = st.multiselect(
             'What states you want to compare',
             [' TX',' CA',' NY',' IL',' AZ',' PA',' FL',' OH',' NJ'])
@@ -114,7 +121,9 @@ with tab3:
 
         fig.update_layout(title = 'Salaries in States', barmode = 'group')
         st.plotly_chart(fig, use_container_width=True)
-    with col2:
+        st.success("Graphs generated successfully")
+
+    with st.expander("Click to see jobs by sectors"):
         options1 = st.multiselect('Which sectors you want to compare',['Information Technology','Business Services','Finance','Health Care','Biotech & Pharmaceuticals'
                     ,'Insurance','Manufacturing','Education','Government'])
         st.write('You selected:', options1)
@@ -138,6 +147,7 @@ with tab3:
         y = data_sector['max salary'],
         name = 'Maximum Salary'
         ))
-    
+
         fig.update_layout(title = 'Salaries in Different Sectors', barmode = 'group')
         st.plotly_chart(fig, use_container_width=True)
+        st.success("Graphs generated successfully")

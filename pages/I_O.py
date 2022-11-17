@@ -14,6 +14,9 @@ from nltk.stem import WordNetLemmatizer
 from nltk.corpus import wordnet
 from sklearn.naive_bayes import MultinomialNB
 
+
+
+
 df=pd.read_csv('pages/DS_DA_BS.csv')
 
 #Clean salary column: we only want yearly salaries
@@ -86,6 +89,6 @@ new_text_vectorized = vectorizer.transform([new_text])
 model.predict(new_text_vectorized)
 # Print the predicted probabilies for each class
 pp = model.predict_proba(new_text_vectorized)
-# Print probabilities for that predicition
+    # Print probabilities for that predicition
 for class_name, percentage in zip(model.classes_, pp.round(3)[0]):
     st.write(class_name,":",percentage )
