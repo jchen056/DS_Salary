@@ -11,7 +11,7 @@ st.sidebar.markdown("# Visualization")
 tab1, tab2, tab3 = st.tabs(["Overview", "Visualizations", "I/O"])
 with tab1:
     st.markdown("Here is our data:")
-    df=pd.read_csv('/Users/jchen056/DS_Salary/pages/DS_DA_BS.csv')
+    df=pd.read_csv('pages/DS_DA_BS.csv')
     #Clean salary column: we only want yearly salaries
     for ind in df.index:
         if re.search("Hour|-1",df['Salary Estimate'][ind]):

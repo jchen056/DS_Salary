@@ -14,7 +14,7 @@ from nltk.stem import WordNetLemmatizer
 from nltk.corpus import wordnet
 from sklearn.naive_bayes import MultinomialNB
 
-df=pd.read_csv('/Users/jchen056/DS_Salary/pages/DS_DA_BS.csv')
+df=pd.read_csv('pages/DS_DA_BS.csv')
 
 #Clean salary column: we only want yearly salaries
 for ind in df.index:
