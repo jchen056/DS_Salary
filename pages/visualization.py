@@ -110,6 +110,9 @@ with tab2:
         # plotting_function(df_ca)
         st.dataframe(df_ca.groupby(['role'])['mean salary'].aggregate(['count','mean','std','median']).sort_values(by='mean',ascending=False),use_container_width=True)
     
+    st.markdown('''
+    * More jobs found in TX and CA
+    * NY and CA offer higher salaries''')
     
 
 
@@ -146,7 +149,9 @@ with tab4:
 
     fig.update_layout(title = 'Salaries in Different Sectors', barmode = 'group')
     st.plotly_chart(fig, use_container_width=True)
-    
+    st.markdown('''
+    * More jobs can be found in IT and Financial Industry
+    * Biotech and IT have higher pay''')
 with tab3:
     with st.expander("Click to see jobs by states"):
         options = st.multiselect(
