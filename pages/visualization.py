@@ -8,7 +8,7 @@ import plotly.graph_objs as go
 import plotly.figure_factory as ff
 
 st.sidebar.markdown("# Visualization")
-tab1, tab2, tab3 = st.tabs(["Overview", "Visualizations", "I/O"])
+tab1, tab2,tab4, tab3 = st.tabs(["Overview", "States","Sectors", "I/O"])
 with tab1:
     
     df=pd.read_csv('pages/DS_DA_BS.csv')
@@ -79,16 +79,73 @@ with tab2:
     plt.xlabel('State')
     plt.ylabel('Job Count')
     plt.title('Top 8 States for DS/DA/BA')
-    # st.pyplot(ax.get_figure())
+    fig1=ax.get_figure()
+    st.pyplot(fig1,clear_figure=True)
 
-    st.pyplot()
+    df_ny=df[df['states']==' NY']
+    df_tx=df[df['states']==' TX']
+    df_ca=df[df['states']==' CA']
+    p1,p2,p3=st.columns(3)
+
+    def plotting_function(df):
+        DS_salaries=list(df[df['role']=='DS']['mean salary'])
+        DA_salaries=list(df[df['role']=='DA']['mean salary'])
+        BA_salaries=list(df[df['role']=='BA']['mean salary'])
+        
+        hist_data=[DS_salaries,DA_salaries,BA_salaries]
+        fig=ff.create_distplot(
+                hist_data, ['DS','DA','BA'])
+        st.plotly_chart(fig,use_container_width=True)
+    with p1:
+        st.markdown("### New York")
+        # plotting_function(df_ny)
+        df_ny_info=df_ny.groupby(['role'])['mean salary'].aggregate(['count','mean','std','median']).sort_values(by='mean',ascending=False)
+        st.dataframe(df_ny_info,use_container_width=True)
+    with p2:
+        st.markdown("### Texas")
+        # plotting_function(df_tx)
+        st.dataframe(df_tx.groupby(['role'])['mean salary'].aggregate(['count','mean','std','median']).sort_values(by='mean',ascending=False),use_container_width=True)
+    with p3:
+        st.markdown("### California")
+        # plotting_function(df_ca)
+        st.dataframe(df_ca.groupby(['role'])['mean salary'].aggregate(['count','mean','std','median']).sort_values(by='mean',ascending=False),use_container_width=True)
+    
+    
+
+
+with tab4:
+    # st.markdown("states")
+    # st.pyplot()
     color = plt.cm.plasma(np.linspace(0,1,9))
     ax1=df['Sector'].value_counts().sort_values(ascending=False).head(9).plot.bar(color=color)
     plt.title("Sector with highest number of Jobs in DS/DA/BA")
     plt.xlabel("Sector")
     plt.ylabel("Count")
-    st.pyplot(ax1.get_figure())
+    st.pyplot(ax1.get_figure(),clear_figure=True)
 
+    data_sector=df[df['Sector'].isin(['Information Technology','Business Services','Finance','Health Care','Biotech & Pharmaceuticals'
+                 ,'Insurance','Manufacturing','Education','Government'])].groupby('Sector')[['min salary','max salary','mean salary']].mean().sort_values(['mean salary','min salary','max salary'],ascending=False).head(8)
+    fig = go.Figure()
+    fig.add_trace(go.Bar(
+    x = data_sector.index,
+    y = data_sector['mean salary'],
+    name = 'Mean Salary'
+    ))
+
+    fig.add_trace(go.Bar(
+    x = data_sector.index,
+    y = data_sector['min salary'],
+    name = 'Minimum Salary'
+    ))
+
+    fig.add_trace(go.Bar(
+    x = data_sector.index,
+    y = data_sector['max salary'],
+    name = 'Maximum Salary'
+    ))
+
+    fig.update_layout(title = 'Salaries in Different Sectors', barmode = 'group')
+    st.plotly_chart(fig, use_container_width=True)
     
 with tab3:
     with st.expander("Click to see jobs by states"):
